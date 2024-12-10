@@ -1,0 +1,29 @@
+//write an aplication that keeps tract of a household's budget, by adding fields for expenses, income and recurring costs. this is a great project because it can scale your abilities. As your skills grow, perhaps, you can add a feature that lets the the user specify a date range or graph out amouts each month. You can also connect your tracker to an api that inouts the correct tax rate for the user's location. if you have tried using a budget app but didn;t feel like it had all the features you wanted this is an opportunity to create a custom solution for your needs.
+
+
+budget-tracker/
+├── src/
+│   ├── main/
+│   │   ├── java/com/example/budgettracker/
+│   │   │   ├── controller/ 
+|   |   |   |   |--TransactionController.java  
+|   |   |   |   |--UserController.java        # Controllers for handling HTTP requests
+│   │   │   ├── model/ 
+|   |   |   |   |--Transaction.java  
+|   |   |   |   |--User.java  
+|   |   |   |   |--TransactionType.java
+│   │   │   ├── repository/    
+|   |   |   |   |--TransRespository.java  
+|   |   |   |   |--UserRespositoryr.java             # Repositories (UserRepository, TransactionRepository)
+│   │   │   ├── service/         
+|   |   |   |   |--TransactionService.java  
+|   |   |   |   |--UserService.java            # Business logic (UserService, TransactionService)
+│   │   │   └── BudgetTrackerApplication.java # Main application class
+│   │   ├── resources/
+│   │   │   ├── static/               # CSS, JavaScript, Images
+│   │   │   ├── templates/            # Thymeleaf templates (HTML)
+│   │   │   ├── application.properties # App configurations
+│   │   │   └── data.sql              # Optional: Seed data for testing
+│   │   └── test/java/                # Test cases (JUnit/Mockito)
+├── pom.xml                           # Maven dependencies
+└── README.md                         # Documentation
