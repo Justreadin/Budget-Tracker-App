@@ -41,7 +41,7 @@ body {
 
 /* Text Gradient */
 .text-gradient {
-    background: linear-gradient(90deg, #ff758c, #ff7eb3);
+    background: linear-gradient(90deg, grey, black);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -60,10 +60,12 @@ body {
     box-shadow: 0 0 12px #6a11cb;
     border-color: #6a11cb;
 }
-
+#btn {
+    color: white
+}
 /* Button Styles */
 .btn-gradient {
-    background: linear-gradient(to right, #ff7eb3, #ff758c);
+    background: linear-gradient(to right, rgb(46, 45, 45), black);
     color: #fff;
     border: none;
     padding: 12px;
@@ -75,7 +77,7 @@ body {
 
 .btn-gradient:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(255, 117, 140, 0.5);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.386);
 }
 
 .btn-gradient:active {
@@ -85,18 +87,19 @@ body {
 /* Spinner */
 .spinner-border {
     margin-right: 8px;
+    color: white;
 }
 
 /* Link Styles */
 a {
     text-decoration: none;
     font-weight: bold;
-    color: #ff7eb3;
+    color: #050505;
     transition: color 0.3s ease;
 }
 
 a:hover {
-    color: #ff758c;
+    color: #070707;
 }
 
 /* Responsive Design */

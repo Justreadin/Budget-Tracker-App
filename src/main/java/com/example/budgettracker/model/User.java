@@ -1,5 +1,7 @@
 package com.example.budgettracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,11 +35,12 @@ public class User implements UserDetails {
     )
     private Set<Role> roles;
 
-    private double income;
-    private double expenses;
-    private double recurringCosts;
+    private Double income;
+    private Double expenses;
+    private Double recurringCosts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // Marks this side as the parent in the serialization process
     private List<Transaction> transactions;
 
     public Long getId() {
@@ -80,27 +83,27 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public double getIncome() {
+    public Double getIncome() {
         return income;
     }
 
-    public void setIncome(double income) {
+    public void setIncome(Double income) {
         this.income = income;
     }
 
-    public double getExpenses() {
+    public Double getExpenses() {
         return expenses;
     }
 
-    public void setExpenses(double expenses) {
+    public void setExpenses(Double expenses) {
         this.expenses = expenses;
     }
 
-    public double getRecurringCosts() {
+    public Double getRecurringCosts() {
         return recurringCosts;
     }
 
-    public void setRecurringCosts(double recurringCosts) {
+    public void setRecurringCosts(Double recurringCosts) {
         this.recurringCosts = recurringCosts;
     }
 

@@ -92,19 +92,19 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((data) => {
                 clearTimeout(timeoutId);
                 spinner.classList.add("d-none");
-
+        
                 if (data.success && data.token) {
+                    // Store the token and role in localStorage
                     localStorage.setItem("token", data.token);
                     localStorage.setItem("Role", data.role);
-
+        
+                    // Decode token to extract userId
                     const tokenPayload = JSON.parse(atob(data.token.split('.')[1]));
                     localStorage.setItem("userId", tokenPayload.userId);
-
+        
                     console.log("Decoded token payload:", tokenPayload);
                     console.log("User ID stored:", localStorage.getItem("userId"));
-
-
-                    console.log("User joined with ID:", localStorage.getItem("userId"));
+        
                     alert("Login successful!");
                     if (data.role === "admin") {
                         window.location.href = "/admin";
@@ -121,6 +121,5 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Error during login:", error);
                 alert(`Login failed: ${error.message}`);
             });
-    };
-
+        }
 });

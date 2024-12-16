@@ -1,176 +1,136 @@
 /* Global Styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f7f7f7;
+  color: #333;
+  min-height: 100vh;
+  padding: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode {
+  background-color: #1c1c1c;
+  color: #e0e0e0;
+}
+
+.dark-mode .card {
+  background-color: #2a2a2a;
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.6),
+      -10px -10px 20px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .btn {
+  background-color: #444;
+  color: #fff;
+}
+
+h1, h2, h3 {
+  font-family: 'Poppins', sans-serif;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Neomorphic Cards */
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2),
+      -10px -10px 20px rgba(255, 255, 255, 0.7);
+  padding: 20px;
+  margin-bottom: 30px;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0px 20px 30px rgba(0, 0, 0, 0.3),
+      -5px -5px 20px rgba(255, 255, 255, 0.8);
+}
+
+.glass-effect {
+  backdrop-filter: blur(10px) saturate(180%);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Buttons */
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+  transform: translateY(-3px);
+}
+
+/* Spinners and Loaders */
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff758c;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
   }
-  
-  body {
-    background-color: #f0f0f0; /* Light theme background */
-    color: #333;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
+  100% {
+      transform: rotate(360deg);
   }
-  
-  /* Dark Mode */
-  .dark-mode {
-    background-color: #222;
-    color: #fff;
+}
+
+/* Chart Canvas Styling */
+canvas {
+  border-radius: 20px;
+  background: linear-gradient(145deg, #f0f0f0, #d9d9d9);
+  box-shadow: inset 5px 5px 10px #bebebe, inset -5px -5px 10px #ffffff;
+}
+
+/* Transaction List */
+.list-group-item {
+  background-color: #f7f7f7;
+  border: none;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1),
+      -5px -5px 15px rgba(255, 255, 255, 0.7);
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+
+.list-group-item:hover {
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2),
+      0px -5px 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  h1 {
+      font-size: 2rem;
   }
-  
-  .dark-mode a, .dark-mode button {
-    color: inherit;
-  }
-  
-  .dark-mode button {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
-  }
-  
-  .dark-mode button:hover {
-    background-color: #388e3c;
-  }
-  
-  /* Header */
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-  }
-  
-  header h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
-  }
-  
-  /* Overview Section */
-  #overview {
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 40px;
-    position: relative; /* For overlay effect */
-  }
-  
-  #overview::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom right, #f0f0f0, #e0e0e0);
-    opacity: 0.7;
-    border-radius: 20px;
-    z-index: -1;
-  }
-  
-  #overview h2 {
-    font-size: 2rem;
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  
+
   .overview-stats {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .overview-stats .stat {
-    text-align: center;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1); /* Neumorphic effect */
-  }
-  
-  .overview-stats h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-  }
-  
-  .overview-stats p {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
-  #budgetChart {
-    width: 100%;
-    max-width: 500px;
-    margin-top: 30px;
-  }
-  
-  /* Transactions Section */
-  #transactions {
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 40px;
-  }
-  
-  #transactions h2 {
-    font-size: 2rem;
-    margin-bottom: 30px;
-  }
-  
-  #addTransaction {
-    padding: 15px 30px;
-    border: none;
-    border-radius: 10px;
-    background-color: #2196F3;
-    color: #fff;
-    margin-bottom: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-  }
-  
-  #addTransaction:hover {
-    background-color: #1780c3;
-    transform: translateY(-3px);
-  }
-  
-  #transactionList {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  #transactionList li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  #transactionList li:last-child {
-    border-bottom: none;
-  }
-  
-  .description {
-    font-weight: bold;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    /* Adjust layout and font sizes for smaller screens */
-    header {
       flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .overview-stats {
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .overview-stats .stat {
-      margin-bottom: 20px;
-    }
+      gap: 20px;
   }
+}

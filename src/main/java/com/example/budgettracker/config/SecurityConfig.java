@@ -47,9 +47,10 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/register", "/api/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/register", "/api/login", "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/", "/static/*", "/css/**", "/js/**", "/images/**", "/login", "/register", "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/dashboard").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/dashboard").permitAll() // Allow public access to the dashboard page
+                        .requestMatchers(HttpMethod.GET, "/api/dashboard").authenticated() // Secure the API
                         .requestMatchers(HttpMethod.GET, "/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -66,16 +67,16 @@ public class SecurityConfig {
                         .permitAll())
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
-                        .successHandler(customAuthenticationSuccessHandler)
                         .permitAll());
-
+    
         http.exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.sendRedirect("/error");
                 });
-
+    
         return http.build();
     }
+    
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {

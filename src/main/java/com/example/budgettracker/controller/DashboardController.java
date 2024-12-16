@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -98,39 +99,16 @@ public class DashboardController {
 
     // Dashboard Endpoint (HTML)
     @GetMapping("/dashboard")
-    public String showDashboard(Model model) {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            if (authentication == null || !authentication.isAuthenticated()
-                    || !(authentication.getPrincipal() instanceof UserDetails)) {
-                return "redirect:/login";
-            }
-
-            String email = authentication.getName();
-            User user = userService.getUserByEmail(email);
-
-            if (user == null) {
-                return "redirect:/login";
-            }
-
-            model.addAttribute("userName", user.getName());
-            model.addAttribute("income", user.getIncome());
-            model.addAttribute("expenses", user.getExpenses());
-            model.addAttribute("recurring", user.getRecurringCosts());
-            model.addAttribute("transactions", transactionService.findTransactionsByUser(user));
-
-            return "dashboard";
-        } catch (Exception e) {
-            logger.error("Error rendering dashboard: {}", e.getMessage());
-            return "error";
-        }
+    public String showDashboard() {
+        // Render the dashboard HTML without performing authentication checks here
+        return "dashboard"; // This corresponds to `dashboard.html` in your templates
     }
 
     @GetMapping("/api/dashboard")
     @ResponseBody
     public ResponseEntity<?> getDashboardData() {
         try {
+            // Retrieve authentication details from the security context
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (authentication == null || !authentication.isAuthenticated()
@@ -138,6 +116,47 @@ public class DashboardController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Unauthorized"));
             }
 
+            // Get the authenticated user's email
+            String email = authentication.getName();
+
+            // Fetch the user object from the database
+            User user = userService.getUserByEmail(email);
+
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not found"));
+            }
+
+            // Prepare the dashboard data with default values for null fields
+            Map<String, Object> dashboardData = new HashMap<>();
+            dashboardData.put("userName", user.getName());
+            dashboardData.put("income", user.getIncome() != null ? user.getIncome() : 0.0);
+            dashboardData.put("expenses", user.getExpenses() != null ? user.getExpenses() : 0.0);
+            dashboardData.put("recurring", user.getRecurringCosts() != null ? user.getRecurringCosts() : 0.0);
+
+            // Fetch user transactions or default to an empty list
+            List<Transaction> transactions = transactionService.findTransactionsByUser(user);
+            dashboardData.put("transactions", transactions != null ? transactions : List.of());
+
+            return ResponseEntity.ok(dashboardData);
+        } catch (Exception ex) {
+            logger.error("Error fetching dashboard data: {}", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An error occurred: " + ex.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/api/transactions/{transactionId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteTransaction(@PathVariable Long transactionId) {
+        try {
+            // Retrieve authentication details from the security context
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()
+                    || !(authentication.getPrincipal() instanceof UserDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Unauthorized"));
+            }
+
+            // Get the email of the authenticated user
             String email = authentication.getName();
             User user = userService.getUserByEmail(email);
 
@@ -145,16 +164,19 @@ public class DashboardController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not found"));
             }
 
-            Map<String, Object> dashboardData = new HashMap<>();
-            dashboardData.put("userName", user.getName());
-            dashboardData.put("income", user.getIncome());
-            dashboardData.put("expenses", user.getExpenses());
-            dashboardData.put("recurring", user.getRecurringCosts());
-            dashboardData.put("transactions", transactionService.findTransactionsByUser(user));
+            // Find the transaction by ID
+            Transaction transaction = transactionService.findTransactionById(transactionId);
+            if (transaction == null || !transaction.getUser().equals(user)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Transaction not found or does not belong to the user"));
+            }
 
-            return ResponseEntity.ok(dashboardData);
+            // Delete the transaction by ID
+            transactionService.deleteTransaction(transactionId);
+
+            return ResponseEntity.ok(Map.of("message", "Transaction deleted successfully"));
         } catch (Exception ex) {
-            logger.error("Error fetching dashboard data: {}", ex.getMessage());
+            logger.error("Error deleting transaction: {}", ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "An error occurred: " + ex.getMessage()));
         }

@@ -1,84 +1,276 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Budget Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="/css/style.css" rel="stylesheet">
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+    <!-- FontAwesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Light Mode */
+      .light {
+        background-color: #ffffff;
+        color: #333333;
+      }
+      .light .card {
+        background-color: #f9f9f9;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      .light button {
+        background-color: #e0e0e0;
+        color: #333333;
+      }
+      .light .icon {
+        color: #000000;
+      }
+      .light h1,
+      .light h2,
+      .light h3 {
+        color: #000000;
+      }
+      /* Dark Mode */
+      .dark {
+        background-color: #1f2937;
+        color: #f9fafb;
+      }
+      .dark .card {
+        background-color: #374151;
+      }
+      .dark button {
+        background-color: #4b5563;
+        color: #f9fafb;
+      }
+      .dark .icon {
+        color: #f9fafb;
+      }
 
-<body>
-    <div class="container my-5">
-        <!-- Dashboard Header -->
-        <header class="d-flex justify-content-between align-items-center">
-            <h1 class="display-5">Your Dashboard</h1>
-            <div>
-                <button id="toggleMode" class="btn btn-outline-secondary me-3">Dark Mode</button>
-                <a th:href="@{/login}" class="btn btn-danger">Logout</a>
-            </div>
-        </header>
+      /* Loader container styles */
+      #loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.8
+        ); /* Black background with transparency */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Ensure loader is on top of other elements */
+      }
 
-        <!-- Search Bar -->
-        <div class="input-group my-4">
-            <input type="text" class="form-control" placeholder="Search transactions..." id="searchBar">
-            <button class="btn btn-primary" id="searchButton">
-                <i class="fas fa-search"></i>
-            </button>
+      /* Spinner styles */
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 6px solid #f3f3f3; /* Light gray border */
+        border-top: 6px solid #000; /* Black border at the top */
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      /* Spinner animation */
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Hidden class to toggle loader visibility */
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body class="light">
+    <div class="min-h-screen p-5">
+      <!-- Header -->
+      <header class="flex justify-between items-center mb-6">
+        <h1 class="text-4xl font-bold">Budget Dashboard</h1>
+        <div>
+          <button
+            id="toggleMode"
+            class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+          >
+            <i class="fas fa-moon icon"></i> Dark Mode
+          </button>
+          <button
+            class="ml-3 px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white" id="logoutBtn"
+          >
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        <button
+        class="ml-3 px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-red-500 font-bold" id ="resetBudget">Reset</button>
+      </div>
+      </header>
+      <!-- Budget Overview -->
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="p-6 rounded-lg shadow card">
+          <h3 class="text-green-400 text-xl font-semibold mb-2">Income</h3>
+          <p id="income" class="text-3xl font-bold">$0.00</p>
         </div>
+        <div class="p-6 rounded-lg shadow card">
+          <h3 class="text-yellow-400 text-xl font-semibold mb-2">Expenses</h3>
+          <p id="expenses" class="text-3xl font-bold">$0.00</p>
+        </div>
+        <div class="p-6 rounded-lg shadow card">
+          <h3 class="text-red-400 text-xl font-semibold mb-2">
+            Recurring Costs
+          </h3>
+          <p id="recurring" class="text-3xl font-bold">$0.00</p>
+        </div>
+      </section>
 
-        <!-- Loader -->
-        <div class="loader" id="loader" style="display: none;"></div>
+      <!-- Charts Section -->
+      <section class="p-6 rounded-lg shadow card mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Budget Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <canvas id="pieChart"></canvas>
+          </div>
+          <div>
+            <canvas id="lineChart"></canvas>
+          </div>
+        </div>
+      </section>
 
-        <!-- Overview Section -->
-        <section id="overview" class="card shadow-lg p-4 mb-5 glass-effect">
-            <h2 class="mb-4">Budget Overview</h2>
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <h3 class="text-success">Income</h3>
-                    <p><span th:text="${income}">$0.00</span></p>
-                </div>
-                <div class="col-md-4">
-                    <h3 class="text-warning">Expenses</h3>
-                    <p><span th:text="${expenses}">$0.00</span></p>
-                </div>
-                <div class="col-md-4">
-                    <h3 class="text-danger">Recurring Costs</h3>
-                    <p><span th:text="${recurringCosts}">$0.00</span></p>
-                </div>
-            </div>
-            <div class="mt-4">
-                <canvas id="budgetChart"></canvas>
-            </div>
-        </section>
+      <div id="loaer">
+        <div class="spinnr"></div>
+      </div>
 
-        <!-- Transactions Section -->
-        <section id="transactions" class="card shadow-lg p-4 mb-5 glass-effect">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>Transactions</h2>
-                <button id="addTransaction" class="btn btn-outline-primary">
-                    <i class="fas fa-plus"></i> Add Transaction
-                </button>
+      <!-- Transactions Section -->
+      <section class="p-6 rounded-lg shadow card">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-semibold">Transactions</h2>
+          <button
+            id="addTransaction"
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+          >
+            <i class="fas fa-plus mr-2"></i> Add Transaction
+          </button>
+        </div>
+        <ul id="transactionList" class="space-y-4">
+          <!-- Transactions will be listed here -->
+        </ul>
+      </section>
+
+      <!-- Transaction History -->
+      <section class="p-6 rounded-lg shadow card mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Transaction History</h2>
+        <ul id="transactionHistory" class="space-y-4">
+          <!-- Transaction history will appear here -->
+        </ul>
+      </section>
+
+      <div
+        id="transactionModal"
+        class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden"
+      >
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-96 shadow-lg">
+          <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+            Add Transaction
+          </h2>
+          <form id="transactionForm" class="space-y-4">
+            <!-- Transaction Type -->
+            <div>
+              <label class="block text-gray-700 dark:text-gray-300 mb-2"
+                >Transaction Type</label
+              >
+              <select
+                id="transactionType"
+                class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="income">Income</option>
+                <option value="expenses">Expenses</option>
+                <option value="recurring">Recurring Costs</option>
+              </select>
             </div>
-            <ul id="transactionList" class="list-group">
-                <li th:each="transaction : ${transactions}" class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong th:text="${transaction.description}">Transaction Description</strong>
-                            <br>
-                            <small th:text="${transaction.date}">Transaction Date</small>
-                        </div>
-                        <span th:text="${transaction.amount}">$0.00</span>
-                    </div>
-                </li>
-            </ul>
-        </section>
+            <!-- Description -->
+            <div>
+              <label class="block text-gray-700 dark:text-gray-300 mb-2"
+                >Description</label
+              >
+              <input
+                type="text"
+                id="transactionDescription"
+                class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                placeholder="Enter description"
+                required
+              />
+            </div>
+            <!-- Amount -->
+            <div>
+              <label class="block text-gray-700 dark:text-gray-300 mb-2"
+                >Amount</label
+              >
+              <input
+                type="number"
+                id="transactionAmount"
+                class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                placeholder="Enter amount"
+                required
+              />
+            </div>
+            <!-- Date -->
+            <div>
+              <label class="block text-gray-700 dark:text-gray-300 mb-2">Date</label>
+              <input
+              type="date"
+              id="transactionDate"
+              class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+              required
+              />
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end space-x-2">
+              <button
+                type="button"
+                id="cancelTransaction"
+                class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                id="submitTransaction"
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Add
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-
     <script src="/js/scripts.js"></script>
-</body>
-
+    <script>
+      const body = document.body;
+      const toggleMode = document.getElementById("toggleMode");
+      toggleMode.addEventListener("click", () => {
+        if (body.classList.contains("dark")) {
+          body.classList.replace("dark", "light");
+          toggleMode.innerHTML = '<i class="fas fa-sun icon"></i> Light Mode';
+        } else {
+          body.classList.replace("light", "dark");
+          toggleMode.innerHTML = '<i class="fas fa-moon icon"></i> Dark Mode';
+        }
+      });
+    </script>
+  </body>
 </html>

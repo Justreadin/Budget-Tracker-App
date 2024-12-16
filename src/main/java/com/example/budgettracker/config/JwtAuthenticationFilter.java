@@ -31,29 +31,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-    
+
         String authorizationHeader = request.getHeader("Authorization");
-    
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer")) {
+
+        // Check for Authorization header with Bearer token
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
-    
+
             try {
                 String email = jwtTokenService.extractEmailFromToken(token);
-    
-                // Ensure the token is valid and there's no existing authentication in the context
+
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = userService.loadUserByUsername(email);
-    
-                    // Validate token against user details
+
+                    // Validate token with user details
                     if (jwtTokenService.validateTokenWithUser(token, userDetails)) {
                         UsernamePasswordAuthenticationToken authentication =
-                                new UsernamePasswordAuthenticationToken(
-                                        userDetails, 
-                                        null, 
-                                        userDetails.getAuthorities()
-                                );
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-    
+
                         // Set the authentication in the SecurityContext
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
@@ -62,8 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.error("JWT Token validation error: {}", e.getMessage());
             }
         }
-    
+
+        // Proceed with the request chain
         filterChain.doFilter(request, response);
     }
-    
 }
