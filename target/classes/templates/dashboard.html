@@ -58,12 +58,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(
-          0,
-          0,
-          0,
-          0.8
-        ); /* Black background with transparency */
+        background-color: rgba(0, 0, 0, 0.8); /* Black background with transparency */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -94,174 +89,236 @@
       .hidden {
         display: none;
       }
+
+      /* Sidebar Styles */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 250px;
+        background-color: #2d3748;
+        padding-top: 20px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 12px 16px;
+        margin: 8px 0;
+        font-size: 16px;
+        border-radius: 5px;
+      }
+
+      .sidebar a:hover {
+        background-color: #4b5563;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          margin-left: 0;
+        }
+        .sidebar {
+          width: 70%;
+          height: 100%;
+          position: fixed;
+        }
+      }
+
     </style>
   </head>
 
   <body class="light">
-    <div class="min-h-screen p-5">
-      <!-- Header -->
-      <header class="flex justify-between items-center mb-6">
-        <h1 class="text-4xl font-bold">Budget Dashboard</h1>
-        <div>
-          <button
-            id="toggleMode"
-            class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
-          >
-            <i class="fas fa-moon icon"></i> Dark Mode
-          </button>
-          <button
-            class="ml-3 px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white" id="logoutBtn"
-          >
-            <i class="fas fa-sign-out-alt"></i> Logout
-          </button>
-        <button
-        class="ml-3 px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-red-500 font-bold" id ="resetBudget">Reset</button>
-      </div>
-      </header>
-      <!-- Budget Overview -->
-      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div class="p-6 rounded-lg shadow card">
-          <h3 class="text-green-400 text-xl font-semibold mb-2">Income</h3>
-          <p id="income" class="text-3xl font-bold">$0.00</p>
-        </div>
-        <div class="p-6 rounded-lg shadow card">
-          <h3 class="text-yellow-400 text-xl font-semibold mb-2">Expenses</h3>
-          <p id="expenses" class="text-3xl font-bold">$0.00</p>
-        </div>
-        <div class="p-6 rounded-lg shadow card">
-          <h3 class="text-red-400 text-xl font-semibold mb-2">
-            Recurring Costs
-          </h3>
-          <p id="recurring" class="text-3xl font-bold">$0.00</p>
-        </div>
-      </section>
-
-      <!-- Charts Section -->
-      <section class="p-6 rounded-lg shadow card mb-8">
-        <h2 class="text-2xl font-semibold mb-4">Budget Overview</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <canvas id="pieChart"></canvas>
-          </div>
-          <div>
-            <canvas id="lineChart"></canvas>
-          </div>
-        </div>
-      </section>
-
-      <div id="loaer">
-        <div class="spinnr"></div>
+    <div class="min-h-screen flex flex-row">
+      <!-- Sidebar -->
+      <div id="sidebar" class="sidebar">
+        <a href="#" id="toggleMode">
+          <i class="fas fa-moon icon"></i> Dark Mode
+        </a>
+        <a href="#" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+        <a href="#" id="resetBudget">
+          <i class="fas fa-redo"></i> Reset Budget
+        </a>
       </div>
 
-      <!-- Transactions Section -->
-      <section class="p-6 rounded-lg shadow card">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-2xl font-semibold">Transactions</h2>
-          <button
-            id="addTransaction"
-            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
-          >
-            <i class="fas fa-plus mr-2"></i> Add Transaction
-          </button>
+      <div class="main-content w-full p-5">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
+          <h1 class="text-4xl font-bold">Budget Dashboard</h1>
+          <div class="flex items-center">
+            <button
+              id="toggleSidebarBtn"
+              class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 mr-4 md:hidden"
+            >
+              <i class="fas fa-bars"></i>
+            </button>
+            <button
+              id="toggleMode"
+              class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 hidden md:block"
+            >
+              <i class="fas fa-moon icon"></i> Dark Mode
+            </button>
+          </div>
+        </header>
+
+        <!-- Budget Overview -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div class="p-6 rounded-lg shadow card">
+            <h3 class="text-green-400 text-xl font-semibold mb-2">Income</h3>
+            <p id="income" class="text-3xl font-bold">$0.00</p>
+          </div>
+          <div class="p-6 rounded-lg shadow card">
+            <h3 class="text-yellow-400 text-xl font-semibold mb-2">Expenses</h3>
+            <p id="expenses" class="text-3xl font-bold">$0.00</p>
+          </div>
+          <div class="p-6 rounded-lg shadow card">
+            <h3 class="text-red-400 text-xl font-semibold mb-2">
+              Recurring Costs
+            </h3>
+            <p id="recurring" class="text-3xl font-bold">$0.00</p>
+          </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="p-6 rounded-lg shadow card mb-8">
+          <h2 class="text-2xl font-semibold mb-4">Budget Overview</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <canvas id="pieChart"></canvas>
+            </div>
+            <div>
+              <canvas id="lineChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <div id="loder" class="hidden">
+          <div class="spiner"></div>
         </div>
-        <ul id="transactionList" class="space-y-4">
-          <!-- Transactions will be listed here -->
-        </ul>
-      </section>
 
-      <!-- Transaction History -->
-      <section class="p-6 rounded-lg shadow card mb-8">
-        <h2 class="text-2xl font-semibold mb-4">Transaction History</h2>
-        <ul id="transactionHistory" class="space-y-4">
-          <!-- Transaction history will appear here -->
-        </ul>
-      </section>
+        <!-- Transactions Section -->
+        <section class="p-6 rounded-lg shadow card">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-semibold">Transactions</h2>
+            <button
+              id="addTransaction"
+              class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+            >
+              <i class="fas fa-plus mr-2"></i> Add Transaction
+            </button>
+          </div>
+          <ul id="transactionList" class="space-y-4">
+            <!-- Transactions will be listed here -->
+          </ul>
+        </section>
 
-      <div
-        id="transactionModal"
-        class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden"
-      >
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-96 shadow-lg">
-          <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-            Add Transaction
-          </h2>
-          <form id="transactionForm" class="space-y-4">
-            <!-- Transaction Type -->
-            <div>
-              <label class="block text-gray-700 dark:text-gray-300 mb-2"
-                >Transaction Type</label
-              >
-              <select
-                id="transactionType"
+        <!-- Transaction History -->
+        <section class="p-6 rounded-lg shadow card mb-8">
+          <h2 class="text-2xl font-semibold mb-4">Transaction History</h2>
+          <ul id="transactionHistory" class="space-y-4">
+            <!-- Transaction history will appear here -->
+          </ul>
+        </section>
+
+        <div
+          id="transactionModal"
+          class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden"
+        >
+          <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-96 shadow-lg">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+              Add Transaction
+            </h2>
+            <form id="transactionForm" class="space-y-4">
+              <!-- Transaction Type -->
+              <div>
+                <label class="block text-gray-700 dark:text-gray-300 mb-2"
+                  >Transaction Type</label
+                >
+                <select
+                  id="transactionType"
+                  class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="income">Income</option>
+                  <option value="expenses">Expenses</option>
+                  <option value="recurring">Recurring Costs</option>
+                </select>
+              </div>
+              <!-- Description -->
+              <div>
+                <label class="block text-gray-700 dark:text-gray-300 mb-2"
+                  >Description</label
+                >
+                <input
+                  type="text"
+                  id="transactionDescription"
+                  class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                  placeholder="Enter description"
+                  required
+                />
+              </div>
+              <!-- Amount -->
+              <div>
+                <label class="block text-gray-700 dark:text-gray-300 mb-2"
+                  >Amount</label
+                >
+                <input
+                  type="number"
+                  id="transactionAmount"
+                  class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                  placeholder="Enter amount"
+                  required
+                />
+              </div>
+              <!-- Date -->
+              <div>
+                <label class="block text-gray-700 dark:text-gray-300 mb-2">Date</label>
+                <input
+                type="date"
+                id="transactionDate"
                 class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-              >
-                <option value="income">Income</option>
-                <option value="expenses">Expenses</option>
-                <option value="recurring">Recurring Costs</option>
-              </select>
-            </div>
-            <!-- Description -->
-            <div>
-              <label class="block text-gray-700 dark:text-gray-300 mb-2"
-                >Description</label
-              >
-              <input
-                type="text"
-                id="transactionDescription"
-                class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                placeholder="Enter description"
                 required
-              />
-            </div>
-            <!-- Amount -->
-            <div>
-              <label class="block text-gray-700 dark:text-gray-300 mb-2"
-                >Amount</label
-              >
-              <input
-                type="number"
-                id="transactionAmount"
-                class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                placeholder="Enter amount"
-                required
-              />
-            </div>
-            <!-- Date -->
-            <div>
-              <label class="block text-gray-700 dark:text-gray-300 mb-2">Date</label>
-              <input
-              type="date"
-              id="transactionDate"
-              class="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-              required
-              />
-            </div>
+                />
+              </div>
 
-            <!-- Buttons -->
-            <div class="flex justify-end space-x-2">
-              <button
-                type="button"
-                id="cancelTransaction"
-                class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                id="submitTransaction"
-                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Add
-              </button>
-            </div>
-          </form>
+              <!-- Buttons -->
+              <div class="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  id="cancelTransaction"
+                  class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  id="submitTransaction"
+                  class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Add
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
+
     <script src="/js/scripts.js"></script>
     <script>
       const body = document.body;
       const toggleMode = document.getElementById("toggleMode");
+      const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+      const sidebar = document.getElementById("sidebar");
+
       toggleMode.addEventListener("click", () => {
         if (body.classList.contains("dark")) {
           body.classList.replace("dark", "light");
@@ -270,6 +327,10 @@
           body.classList.replace("light", "dark");
           toggleMode.innerHTML = '<i class="fas fa-moon icon"></i> Dark Mode';
         }
+      });
+
+      toggleSidebarBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
       });
     </script>
   </body>
