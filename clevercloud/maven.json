@@ -1,11 +1,11 @@
 {
     "build": {
       "type": "maven",
-      "goal": "clean package"
+      "goal": "clean install"
     },
     "deploy": {
       "java_version": "17",
-      "goal": "clean package"
+      "goal": "clean install"
     }
   }
   
