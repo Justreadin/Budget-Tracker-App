@@ -4,7 +4,8 @@
       "goal": "clean package"
     },
     "deploy": {
-      "java_version": "17"
+      "java_version": "17",
+      "goal": "clean package"
     }
   }
   
